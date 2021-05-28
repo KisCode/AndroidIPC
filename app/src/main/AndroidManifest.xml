@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ipc.kiscode">
 
+    <!--  声明自定义UserManagerService 跨进程访问权限  -->
+    <permission
+        android:name="com.ipc.kiscode.permission.ACCESS_USER_SERVICE"
+        android:protectionLevel="normal" />
+
+    <!--  使用UserManagerService 跨进程访问权限  -->
+    <uses-permission android:name="com.ipc.kiscode.permission.ACCESS_USER_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +27,9 @@
 
         <service
             android:name=".UserManagerService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.ipc.kiscode.permission.ACCESS_USER_SERVICE"
             android:process=":remote" />
     </application>
 

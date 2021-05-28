@@ -63,9 +63,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         initViews();
         Intent intent = new Intent(this, UserManagerService.class);
+//        Intent intent = new Intent();
+//        intent.setClassName("com.ipc.kiscode", "com.ipc.kiscode.UserManagerService");
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 

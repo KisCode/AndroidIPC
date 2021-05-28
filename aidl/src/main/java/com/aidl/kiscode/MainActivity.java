@@ -87,12 +87,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void queryBookList() {
-        try {
-            Log.i(TAG, "getBookList in " + Thread.currentThread().getName());
-            List<Book> bookList = mBookManager.getBookList();
-            tvContent.setText("book size:" + bookList.size() + "\n" + bookList.toString());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        //方法调用者运行在UI线程，而mBookManager.getBookList()却执行在binder线程池，
+        // 如果mBookManager为耗时操作，可能导致应用程序无响应异常ANR，建议在开启子线程进行调用
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "getBookList in " + Thread.currentThread().getName());
+                try {
+                    List<Book> bookList = mBookManager.getBookList();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //通过主线程更新
+                            tvContent.setText("book size:" + bookList.size() + "\n" + bookList.toString());
+                        }
+                    });
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 }

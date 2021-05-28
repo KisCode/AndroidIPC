@@ -3,10 +3,13 @@ package com.ipc.kiscode;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -30,6 +33,28 @@ public class UserManagerService extends Service {
     private RemoteCallbackList<IOnNewUserArrivedListener> mListeners = new RemoteCallbackList<>();
 
     private Binder mBinder = new IUserManager.Stub() {
+
+        @Override
+        public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+            Log.i(TAG,"onTransact");
+            int check = checkCallingOrSelfPermission("com.ipc.kiscode.permission.ACCESS_USER_SERVICE");
+            if (check == PackageManager.PERMISSION_DENIED) {
+                //权限校验不通过 return false
+                return false;
+            }
+
+            //对调用者包名进行校验 仅对包名为"com.ipc.kiscode"提供调用
+            String[] packagesForUid = getPackageManager().getPackagesForUid(getCallingUid());
+            String packageName = null;
+            if (packagesForUid != null && packagesForUid.length > 0) {
+                packageName = packagesForUid[0];
+            }
+            if (packageName == null || !packageName.equals("com.ipc.kiscode")) {
+                return false;
+            }
+            return super.onTransact(code, data, reply, flags);
+        }
+
         @Override
         public List<User> getUserList() throws RemoteException {
             Log.i(TAG, "getUserList in Thread:" + Thread.currentThread().getName());
