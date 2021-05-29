@@ -1,3 +1,5 @@
 include ':aidl'
 rootProject.name = "AndroidIPC"
 include ':app'
+include ':messenger'
+include ':binderpool'
