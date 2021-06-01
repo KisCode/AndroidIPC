@@ -1,3 +1,4 @@
+include ':service'
 include ':aidl'
 rootProject.name = "AndroidIPC"
 include ':app'
