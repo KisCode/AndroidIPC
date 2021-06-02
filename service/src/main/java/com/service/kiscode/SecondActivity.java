@@ -14,12 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SecondActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "SecondActivity";
+    private volatile boolean mIsBindService = false;
     private Button btnStartService;
     private Button btnBindService;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(TAG, "onServiceConnected " + name);
+            mIsBindService = true;
         }
 
         @Override
@@ -43,13 +45,18 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+
+        if (mIsBindService) {
+            unbindService(mServiceConnection);
+        }
     }
 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_start_service:
-                startService(new Intent(this, MyService.class));
+                //启动 + 绑定service
+                startService(new Intent(this, MyBindService.class));
+                bindService(new Intent(this, MyBindService.class), mServiceConnection, BIND_AUTO_CREATE);
                 break;
             case R.id.btn_bind_service:
                 //绑定service

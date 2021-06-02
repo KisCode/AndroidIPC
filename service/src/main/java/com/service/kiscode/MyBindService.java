@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyBindService extends Service {
     private static final String TAG = "MyBindService";
-    private static final int TIME_DISTANCE = 1000;
+
+    /**
+     * 标志位页面是否结束，当 mIsDestory = true 结束当前正在进行的线程工作线程，避免内存泄露
+     */
+    private volatile boolean mIsDestory = false;
 
     public MyBindService() {
     }
@@ -24,8 +27,9 @@ public class MyBindService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         Log.i(TAG, "onDestroy");
+        mIsDestory = true;
+        super.onDestroy();
     }
 
     @Override
@@ -34,14 +38,26 @@ public class MyBindService extends Service {
         return null;
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "onUnbind");
+        return super.onUnbind(intent);
+    }
+
     private void doWork() {
-        AtomicInteger mNum = new AtomicInteger();
-        while (true) {
-            if (Calendar.getInstance().getTimeInMillis() % TIME_DISTANCE == 0) {
+        new Thread(() -> {
+            AtomicInteger mNum = new AtomicInteger();
+//            while (!mIsDestory) {
+            while (!mIsDestory) {
                 mNum.addAndGet(1);
                 Log.i(TAG, "------->>>" + mNum.get());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        }).start();
     }
 
 }

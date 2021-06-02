@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.service.kiscode">
+    package="kiscode.aidl.download">
 
     <application
         android:allowBackup="true"
@@ -10,11 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidIPC">
         <service
-            android:name=".MyBindService"
+            android:name=".DownloadService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true"
+            android:process=":remote" />
 
-        <activity android:name=".SecondActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
