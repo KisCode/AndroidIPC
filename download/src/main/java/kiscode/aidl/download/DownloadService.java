@@ -1,7 +1,6 @@
 package kiscode.aidl.download;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -26,17 +25,22 @@ public class DownloadService extends Service {
         }
 
         @Override
-        public void cancleDownload(String url) throws RemoteException {
+        public void cancelDownload(String url) throws RemoteException {
             Log.i(TAG, "cancleDownload:" + url);
         }
 
         @Override
-        public void cancleAll() throws RemoteException {
-            Log.i(TAG, "cancleAll");
+        public void cancelAll() throws RemoteException {
+            Log.i(TAG, "cancelAll");
         }
 
         @Override
         public void addDownloadCallback(IDownloadCallback callback) throws RemoteException {
+            remoteCallbackList.register(callback);
+        }
+
+        @Override
+        public void removeDownloadCallback(IDownloadCallback callback) throws RemoteException {
             remoteCallbackList.register(callback);
         }
     };
@@ -94,6 +98,7 @@ public class DownloadService extends Service {
         try {
             remoteCallbackList.beginBroadcast();
             int count = remoteCallbackList.getRegisteredCallbackCount();
+            Log.i(TAG, count + "\tonComplete:" + url);
             for (int i = 0; i < count; i++) {
                 IDownloadCallback broadcastItem = remoteCallbackList.getBroadcastItem(i);
                 broadcastItem.onComplete(url);

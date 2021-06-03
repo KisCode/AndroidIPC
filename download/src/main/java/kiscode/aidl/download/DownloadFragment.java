@@ -103,6 +103,7 @@ public class DownloadFragment extends Fragment {
         }
     }
 
+
     public void cancleDownload(String url) {
 /*        try {
             mDownloadManager.cancleDownload(url);
