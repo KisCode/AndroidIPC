@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_dowanload"
+        app:layout_constraintEnd_toStartOf="@id/btn_dowanload"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_dowanload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="startDownload"
+        android:text="Download"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancle"
+        app:layout_constraintStart_toEndOf="@id/progressBar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_cancle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="cancleDownload"
+        android:text="Cancle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_dowanload"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_dowanload2"
+        app:layout_constraintEnd_toStartOf="@id/btn_dowanload2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_cancle" />
+
+    <Button
+        android:id="@+id/btn_dowanload2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="startDownload2"
+        android:text="Download2"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancle"
+        app:layout_constraintStart_toEndOf="@id/progressBar2"
+        app:layout_constraintTop_toBottomOf="@id/btn_cancle" />
+
+    <Button
+        android:id="@+id/btn_cancle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="cancleDownload2"
+        android:text="Cancle2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_dowanload2"
+        app:layout_constraintTop_toBottomOf="@id/btn_cancle" />
+
+
+    <Button
+        android:id="@+id/btn_dowanload_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="startDownloadAll"
+        android:text="Download All"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancle"
+        app:layout_constraintStart_toEndOf="@id/progressBar2"
+        app:layout_constraintTop_toBottomOf="@id/btn_dowanload2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

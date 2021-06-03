@@ -34,7 +34,18 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     };
-
+    private IOnNewUserArrivedListener mOnNewUserArrivedListener2 = new IOnNewUserArrivedListener.Stub() {
+        @Override
+        public void onNewUserArrived(User user) throws RemoteException {
+            Log.i(TAG,  "2222222222222 onNewUserArrived:" + user.toString());
+        }
+    };
+    private IOnNewUserArrivedListener mOnNewUserArrivedListener3 = new IOnNewUserArrivedListener.Stub() {
+        @Override
+        public void onNewUserArrived(User user) throws RemoteException {
+            Log.i(TAG,  "333333333333 onNewUserArrived:" + user.toString());
+        }
+    };
 
     //进程死亡监听
     private final IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
@@ -60,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "user list:" + mIUserManager.getUserList().toString());
 
                 mIUserManager.registerUserArrivedListener(mOnNewUserArrivedListener);
+                mIUserManager.registerUserArrivedListener(mOnNewUserArrivedListener2);
+                mIUserManager.registerUserArrivedListener(mOnNewUserArrivedListener3);
 
                 //设置binder死亡回调，当remote进程被杀死后，触发binderDied()回调
                 mIUserManager.asBinder().linkToDeath(deathRecipient, 0);
@@ -97,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
         unbindService(mConnection);
         try {
             mIUserManager.unregisterUserArrivedListener(mOnNewUserArrivedListener);
+            mIUserManager.unregisterUserArrivedListener(mOnNewUserArrivedListener2);
+            mIUserManager.unregisterUserArrivedListener(mOnNewUserArrivedListener3);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
