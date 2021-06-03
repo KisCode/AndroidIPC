@@ -51,6 +51,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    protected void onDestroy() {
+        unbindService(mConnection);
+//        stopService(new Intent(this, BookManagerService.class));
+        super.onDestroy();
+    }
+
     private void initViews() {
         Button btnQuery = findViewById(R.id.btn_query);
         Button btnAdd = findViewById(R.id.btn_add);

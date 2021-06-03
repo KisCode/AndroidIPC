@@ -39,7 +39,27 @@ public class BookManagerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "onCreate");
+        Log.i(TAG, "onCreate " + Thread.currentThread().getName());
+
+        doWork();
+    }
+
+    /***
+     * 模拟耗时操作 10秒后自动结束
+     */
+    private void doWork() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                stopSelf();
+            }
+        }).start();
     }
 
     @Override
@@ -50,12 +70,13 @@ public class BookManagerService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         Log.i(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind");
         return mBookManger;
     }
 }
