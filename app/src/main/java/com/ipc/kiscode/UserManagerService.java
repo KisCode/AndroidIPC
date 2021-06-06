@@ -70,7 +70,7 @@ public class UserManagerService extends Service {
         @Override
         public void registerUserArrivedListener(IOnNewUserArrivedListener listener) throws RemoteException {
             mListeners.register(listener);
-            Log.i(TAG, "registerUserArrivedListener ");
+            Log.i(TAG, "registerUserArrivedListener "+listener.asBinder());
         }
 
         @Override

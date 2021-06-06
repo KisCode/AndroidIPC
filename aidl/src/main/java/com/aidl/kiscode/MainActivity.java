@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            //此处service为服务端与客户端通信的桥梁
+            //Stub.asInterface方法将服务端Binder对象转化为客户端所需的AIDL接口类型对象
             mBookManager = IBookManager.Stub.asInterface(service);
             try {
                 mBookManager.addBook(new Book(1, "Android", 99.9));
@@ -61,10 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         Button btnQuery = findViewById(R.id.btn_query);
         Button btnAdd = findViewById(R.id.btn_add);
+        Button btnArriveListener = findViewById(R.id.btn_arrive_listener);
         tvContent = findViewById(R.id.tv_content);
 
         btnQuery.setOnClickListener(this);
         btnAdd.setOnClickListener(this);
+        btnArriveListener.setOnClickListener(this);
     }
 
     @Override
@@ -75,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_query:
                 queryBookList();
+                break;
+            case R.id.btn_arrive_listener:
+                startActivity(new Intent(this, IPCCallbackActivity.class));
                 break;
         }
     }
@@ -87,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             Log.i(TAG, "addBook in " + Thread.currentThread().getName());
             mBookManager.addBook(book);
+            mBookManager.registerBookArriveListener(new INewBookArriveListener.Stub() {
+                @Override
+                public void onArriveNewBook(Book book) throws RemoteException {
+                    Log.i(TAG, "onArriveNewBook:" + book);
+                }
+            });
             Toast.makeText(this, "Add  " + book.getName(), Toast.LENGTH_SHORT).show();
         } catch (RemoteException e) {
             e.printStackTrace();
