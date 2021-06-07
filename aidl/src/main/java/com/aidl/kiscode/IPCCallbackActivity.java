@@ -1,7 +1,5 @@
 package com.aidl.kiscode;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,16 +10,25 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/***
+ * 进程健通讯 远程回调示例
+ * 1. 点击注册按钮注册一个远程回调
+ * 2. 点击取消注册 移除一个远程回调
+ */
 public class IPCCallbackActivity extends AppCompatActivity {
     private static final String TAG = "IPCCallbackActivity";
+    private final AtomicInteger index = new AtomicInteger();
     private IBookManager mBookManager;
 
-    private final AtomicInteger index = new AtomicInteger();
-    private List<INewBookArriveListener.Stub> mListenerList = new ArrayList<>();
+    //记录客户端 回调接口列表
+    private CopyOnWriteArrayList<INewBookArriveListener.Stub> mListenerList = new CopyOnWriteArrayList<>();
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -49,8 +56,28 @@ public class IPCCallbackActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unbindService(mServiceConnection);
+        clearAllRemoteCallBallBack();
+
+        super.onDestroy();
+    }
+
+    /***
+     * 移除全部注册回调
+     */
+    private void clearAllRemoteCallBallBack() {
+        //移除全部注册
+        if (!mListenerList.isEmpty()) {
+            //移除全部
+            for (INewBookArriveListener.Stub listener : mListenerList) {
+                try {
+                    mBookManager.unRegisterBookArriveListener(listener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            mListenerList.clear();
+        }
     }
 
     public void unRegisterNewBookArriveListener(View view) {
@@ -74,6 +101,8 @@ public class IPCCallbackActivity extends AppCompatActivity {
                 Log.i(TAG, "onArriveNewBook at index " + i);
             }
         };
+        IBinder iBinder = bookArriveListener.asBinder();
+        Log.i(TAG, "registerNewBookArriveListener" + iBinder);
 
         try {
             index.addAndGet(1);

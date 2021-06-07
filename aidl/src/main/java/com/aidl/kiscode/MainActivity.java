@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private IBookManager mBookManager;
     private TextView tvContent;
-
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -31,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mBookManager = IBookManager.Stub.asInterface(service);
             try {
                 mBookManager.addBook(new Book(1, "Android", 99.9));
+                //死亡回调监听
+                mBookManager.asBinder().linkToDeath(mDeathRecipient, 0);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -41,6 +42,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     };
+    //远程服务死亡监听
+    private IBinder.DeathRecipient mDeathRecipient = new IBinder.DeathRecipient() {
+        @Override
+        public void binderDied() {
+            Log.i(TAG, "remote process was kill,will reconnect");
+
+            //重连
+            mBookManager.asBinder().unlinkToDeath(mDeathRecipient, 0);
+            mBookManager = null;
+            connectService();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initViews();
 
-        Intent intent = new Intent(this, BookManagerService.class);
-        startService(intent);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        connectService();
     }
 
     @Override
@@ -58,6 +69,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unbindService(mConnection);
 //        stopService(new Intent(this, BookManagerService.class));
         super.onDestroy();
+    }
+
+    private void connectService() {
+        if (mBookManager != null && mBookManager.asBinder().isBinderAlive()) {
+            return;
+        }
+        Intent intent = new Intent(this, BookManagerService.class);
+        startService(intent);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void initViews() {

@@ -42,13 +42,13 @@ public class BookManagerService extends Service {
 
         @Override
         public void registerBookArriveListener(INewBookArriveListener listener) throws RemoteException {
-            Log.i(TAG, "register "+listener.asBinder());
+            Log.i(TAG, "register " + listener.asBinder());
             mListenerList.register(listener);
         }
 
         @Override
         public void unRegisterBookArriveListener(INewBookArriveListener listener) throws RemoteException {
-            Log.i(TAG, "unRegister  "+listener.asBinder());
+            Log.i(TAG, "unRegister  " + listener.asBinder());
             mListenerList.unregister(listener);
         }
     };
@@ -62,6 +62,25 @@ public class BookManagerService extends Service {
         Log.i(TAG, "onCreate " + Thread.currentThread().getName());
 
         doWork();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "onStartCommand");
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        mIsDestory = true;
+        super.onDestroy();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind");
+        return mBookManger;
     }
 
     /***
@@ -85,9 +104,10 @@ public class BookManagerService extends Service {
 
     private void onNewBookArrive(Book book) {
         int count = mListenerList.beginBroadcast();
-        for(int i=0;i<count;i++){
+        for (int i = 0; i < count; i++) {
             INewBookArriveListener listener = mListenerList.getBroadcastItem(i);
             try {
+                Log.i(TAG, "onNewBookArrive " + listener.asBinder());
                 listener.onArriveNewBook(book);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -95,24 +115,5 @@ public class BookManagerService extends Service {
         }
         mListenerList.finishBroadcast();
 
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand");
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, "onDestroy");
-        mIsDestory = true;
-        super.onDestroy();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind");
-        return mBookManger;
     }
 }
