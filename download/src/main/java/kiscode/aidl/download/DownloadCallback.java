@@ -1,8 +1,8 @@
 package kiscode.aidl.download;
 
-import android.os.IBinder;
-import android.os.RemoteException;
-
-public abstract class DownloadCallback extends IDownloadCallback.Stub{
-
+public interface DownloadCallback{
+    void onStart();
+    void onProgress(long progress);
+    void onComplete();
+    void onError(int httpCode,String msg);
 }
